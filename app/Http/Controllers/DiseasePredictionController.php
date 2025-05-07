@@ -25,7 +25,7 @@ class DiseasePredictionController extends Controller
             logger()->info('Header: ' . json_encode($header)); // Log the header
 
             while (($row = fgetcsv($handle)) !== false) {
-                logger()->info('Row data: ' . json_encode($row)); // Log the row data
+                // logger()->info('Row data: ' . json_encode($row)); // Log the row data
                 $rowData = array_combine($header, $row);
 
                 // Collect symptoms where value is not empty (and key is not 'prognosis')

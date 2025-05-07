@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -45,5 +46,45 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Check if user is a doctor
+     *
+     * @return bool
+     */
+    public function isDoctor(): bool
+    {
+        return $this->role === 'doctor';
+    }
+
+    /**
+     * Check if user is a patient
+     *
+     * @return bool
+     */
+    public function isPatient(): bool
+    {
+        return $this->role === 'patient';
+    }
+
+    /**
+     * Get the doctor profile associated with the user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function doctor()
+    {
+        return $this->hasOne(Doctor::class);
+    }
+
+    /**
+     * Get the appointments for the user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
     }
 }
