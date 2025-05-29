@@ -5,7 +5,7 @@ export default function About() {
     return (
         <div>
             {/* Banner with breadcrumb */}
-            <div className="bg-gray-100 relative">
+            <div className="bg-gray-100 relative ">
                 <nav className="text-sm text-gray-600 absolute top-1/2 -translate-y-1/2 right-20">
                     <ol className="list-reset flex">
                         <li>

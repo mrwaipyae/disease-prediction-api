@@ -48,10 +48,14 @@ export default function Home() {
                                 your inputs using a trained decision tree model.
                             </li>
                             <li>
+                                <b> Get Appointments</b> – Our system develop to
+                                make an appointment with a doctor.
+                            </li>
+                            {/* <li>
                                 <b>View Possible Diseases</b> – Receive a list
                                 of likely diseases along with details and
                                 recommendations.
-                            </li>
+                            </li> */}
                         </ul>
                     </div>
                 </div>

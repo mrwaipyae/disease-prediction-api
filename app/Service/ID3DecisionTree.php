@@ -7,7 +7,7 @@ use Phpml\ModelManager;
 
 class ID3DecisionTree
 {
-    public function train($data, $attributes)
+    public function train($data, $attributes) //build decision tree
     {
         // If all records have the same disease, return that disease
         $diseases = array_unique(array_column($data, 'Disease'));
@@ -23,13 +23,17 @@ class ID3DecisionTree
         // Select the best attribute to split
         $bestAttribute = $this->chooseBestAttribute($data, $attributes);
 
-        // Build the tree
+        // Build the tree //Initializes the tree node with the best attribute.
         $tree = ['attribute' => $bestAttribute, 'branches' => []];
 
+        //Recursively build branches for attribute values
         foreach ([1, 0] as $value) {
             $subset = array_filter($data, function ($item) use ($bestAttribute, $value) {
                 return $item[$bestAttribute] == $value;
             });
+
+            //If a branch has no data, assign the most common disease.
+            //Otherwise, recurse using the remaining attributes.
 
             if (empty($subset)) {
                 $tree['branches'][$value] = $this->majorityDisease($data);
@@ -57,6 +61,8 @@ class ID3DecisionTree
         return $tree;
     }
 
+    //Counts how many times each disease appears.
+    //Sorts by frequency, then returns the most common one.
     private function majorityDisease($data)
     {
         $counts = array_count_values(array_column($data, 'Disease'));
@@ -64,8 +70,11 @@ class ID3DecisionTree
         return array_key_first($counts);
     }
 
+  
+
     private function chooseBestAttribute($data, $attributes)
     {
+        //Loops through each attribute to find which gives the highest information gain.
         $baseEntropy = $this->entropy($data);
         $bestInfoGain = -INF;
         $bestAttribute = null;
@@ -82,6 +91,9 @@ class ID3DecisionTree
                     $infoGain -= $prob * $this->entropy($subset);
                 }
             }
+
+            //Calculates expected entropy after splitting by this attribute.
+            //Subtracts from base entropy to get information gain.
 
             if ($infoGain > $bestInfoGain) {
                 $bestInfoGain = $infoGain;
@@ -106,3 +118,12 @@ class ID3DecisionTree
         return $entropy;
     }
 }
+// Builds a decision tree using the ID3 algorithm.
+
+// Splits on binary attributes (1/0).
+
+// Uses entropy and information gain to select attributes.
+
+// Classifies samples by walking the tree.
+
+// Returns Unknown if the tree lacks a branch for the sample.

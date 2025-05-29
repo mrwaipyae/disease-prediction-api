@@ -1,11 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
+    useGetLoggedInUserQuery,
     useGetSymptomsQuery,
     useLazyPredictDiseaseQuery,
 } from "../../apps/features/apiSlice";
 import OneSelect from "../../components/OneSelect";
 import localIcon from "../../../assets/index";
+import { Navigate, useNavigate } from "react-router-dom";
+import PatientDashboardHeader from "../../components/PatientDashboardHeader";
+
 export default function Results() {
+    const navigate = useNavigate();
+    const { data: user } = useGetLoggedInUserQuery({});
     const { data: symptoms } = useGetSymptomsQuery();
     const [selectedSymptoms, setSelectedSymptoms] = useState([
         "",
@@ -31,6 +37,7 @@ export default function Results() {
         const filtered = selectedSymptoms.filter(Boolean);
         if (filtered.length > 0) {
             triggerPredictDisease({ symptoms: filtered });
+            setSelectedSymptoms(["", "", "", "", ""]);
         }
     };
 
@@ -40,39 +47,28 @@ export default function Results() {
         }
     }, [prediction]);
 
+    const [showMenu, setShowMenu] = useState(false);
+    const menuRef = useRef();
+
+    const handleClickOutside = (e) => {
+        if (menuRef.current && !menuRef.current.contains(e.target)) {
+            setShowMenu(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+        return () =>
+            document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
     return (
         <>
-            <div className="flex flex-row items-center justify-between w-full h-20 bg-gray-800 text-white shadow-lg sticky top-0 z-50">
-                <div className="flex flex-row items-center space-x-4">
-                    <h1 className="text-xl font-bold px-4">
-                        Welcome to the Patient Dashboard
-                    </h1>
-                    <button
-                        className=" text-white"
-                        onClick={() => setSidebarExpanded((prev) => !prev)}
-                    >
-                        {sidebarExpanded ? (
-                            <img
-                                src={localIcon?.menu}
-                                alt="menu"
-                                className="cursor-pointer"
-                            />
-                        ) : (
-                            <img
-                                src={localIcon?.menu}
-                                alt="menu"
-                                className="cursor-pointer"
-                            />
-                        )}
-                    </button>
-                </div>
-
-                <div className="ml-auto mr-4">
-                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        Logout
-                    </button>
-                </div>
-            </div>
+            <PatientDashboardHeader
+                user={user}
+                showMenu={showMenu}
+                setShowMenu={setShowMenu}
+            />
             <div className="flex">
                 {/* Sidebar */}
                 <div
@@ -85,7 +81,15 @@ export default function Results() {
                     <>
                         <div className="flex flex-row items-center space-x-4 mb-6">
                             <img src={localIcon.dashboard} alt="dashboard" />
-                            <h1 className="text-xl">Patient Dashboard</h1>
+                            {user?.role === "doctor" ? (
+                                <h1 className="text-xl font-bold">
+                                    Doctor Dashboard
+                                </h1>
+                            ) : (
+                                <h1 className="text-xl font-bold">
+                                    Patient Dashboard
+                                </h1>
+                            )}
                         </div>
                         <ul className="space-y-6">
                             <li className="flex items-center space-x-4">
@@ -112,18 +116,31 @@ export default function Results() {
                                     </a>
                                 )}
                             </li>
-                            <li className="flex items-center space-x-4">
-                                <img
-                                    src={localIcon.appointment}
-                                    width={20}
-                                    height={20}
-                                />
-                                {sidebarExpanded && (
+                            {user?.role === "doctor" ? (
+                                <li className="flex flex-row items-center space-x-4">
+                                    <img
+                                        src={localIcon.appointment}
+                                        className="text-white"
+                                        width={20}
+                                        height={20}
+                                    />
                                     <a href="/patient/appointments">
-                                        Appointments
+                                        Appointment Requests
                                     </a>
-                                )}
-                            </li>
+                                </li>
+                            ) : (
+                                <li className="flex flex-row items-center space-x-4">
+                                    <img
+                                        src={localIcon.appointment}
+                                        className="text-white"
+                                        width={20}
+                                        height={20}
+                                    />
+                                    <a href="/patient/appointments">
+                                        Your Appointments
+                                    </a>
+                                </li>
+                            )}
                         </ul>
                     </>
                 </div>
@@ -189,7 +206,7 @@ export default function Results() {
                                     />
                                 </div>
                                 <p className="text-green-700 text-lg">
-                                    Predicted Disease:{" "}
+                                    Disease may be:{" "}
                                     <strong>
                                         {prediction?.predicted_disease}
                                     </strong>

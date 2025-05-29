@@ -20,7 +20,7 @@ class DiseasePredictionController extends Controller
         $symptoms = [];
 
         // Read CSV file
-        if (($handle = fopen(storage_path('app/dataset/disease_symptoms.csv'), 'r')) !== false) {
+        if (($handle = fopen(storage_path('app/dataset/Testing.csv'), 'r')) !== false) {
             $header = fgetcsv($handle); // Read the header row
             logger()->info('Header: ' . json_encode($header)); // Log the header
 
@@ -87,7 +87,7 @@ class DiseasePredictionController extends Controller
     {
         $symptoms = [];
     
-        if (($handle = fopen(storage_path('app/dataset/disease_symptoms.csv'), 'r')) !== false) {
+        if (($handle = fopen(storage_path('app/dataset/Testing.csv'), 'r')) !== false) {
             $header = fgetcsv($handle); // Get header first
         
             // All columns except 'prognosis' are symptoms

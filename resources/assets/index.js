@@ -1,8 +1,7 @@
 import logo from "./images/logo.jpg";
 
-import facebook from "./icons/facebook.svg";
-import instagram from "./icons/instagram.svg";
 import twitter from "./icons/twitter.svg";
+import facebook from "./icons/facebook.svg";
 
 import bg from "./images/bg.png";
 import about_us from "./images/about-us.jpg";
@@ -20,24 +19,27 @@ import file from "./icons/file-chart-column.svg";
 import appointment from "./icons/appointment.svg";
 import menu from "./icons/menu.svg";
 import doctor from "./images/doctor.png";
+import userDoctor from "./icons/user-doctor.svg";
+import profile from "./images/profile.png";
 
 export default {
-  logo,
-  facebook,
-  instagram,
-  twitter,
-  bg,
-  about_us,
-  about,
-  banner1,
-  banner2,
-  banner4,
-  close,
-  dashboard,
-  dock,
-  microscope,
-  file,
-  appointment,
-  menu,
-  doctor,
+    logo,
+    facebook,
+    twitter,
+    bg,
+    about_us,
+    about,
+    banner1,
+    banner2,
+    banner4,
+    close,
+    dashboard,
+    dock,
+    microscope,
+    file,
+    appointment,
+    menu,
+    doctor,
+    userDoctor,
+    profile,
 };

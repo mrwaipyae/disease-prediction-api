@@ -26,7 +26,7 @@ export default function Nav() {
                             className={
                                 ({ isActive }) =>
                                     isActive
-                                        ? "font-bold text-small text-[#05445E]" // active color
+                                        ? "font-bold text-small text-[#1c398e]" // active color
                                         : "font-bold text-small text-gray-600 hover:text-[#05445E]" // normal color
                             }
                         >
@@ -37,31 +37,20 @@ export default function Nav() {
                                 to="/about"
                                 className={({ isActive }) =>
                                     isActive
-                                        ? "font-bold text-small text-[#05445E]" // active color
+                                        ? "font-bold text-small text-[#1c398e]" // active color
                                         : "font-bold text-small text-gray-600 hover:text-[#05445E]"
                                 }
                             >
                                 ABOUT
                             </NavLink>
                         </li>
-                        <li>
-                            <NavLink
-                                to="/doctors"
-                                className={({ isActive }) =>
-                                    isActive
-                                        ? "font-bold text-small text-[#05445E]" // active color
-                                        : "font-bold text-small text-gray-600 hover:text-[#05445E]"
-                                }
-                            >
-                                DOCTORS
-                            </NavLink>
-                        </li>
+
                         <li>
                             <NavLink
                                 to="/register"
                                 className={({ isActive }) =>
                                     isActive
-                                        ? "font-bold text-small text-[#05445E]" // active color
+                                        ? "font-bold text-small text-[#1c398e]" // active color
                                         : "font-bold text-small text-gray-600 hover:text-[#05445E]"
                                 }
                             >
@@ -73,11 +62,23 @@ export default function Nav() {
                                 to="/login"
                                 className={({ isActive }) =>
                                     isActive
-                                        ? "font-bold text-small text-[#05445E]" // active color
+                                        ? "font-bold text-small text-[#1c398e]" // active color
                                         : "font-bold text-small text-gray-600 hover:text-[#05445E]"
                                 }
                             >
                                 LOGIN
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                to="/admin-login"
+                                className={({ isActive }) =>
+                                    isActive
+                                        ? "font-bold text-small text-[#1c398e]" // active color
+                                        : "font-bold text-small text-gray-600 hover:text-[#05445E]"
+                                }
+                            >
+                                ADMIN
                             </NavLink>
                         </li>
                     </ul>

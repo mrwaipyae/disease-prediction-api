@@ -7,8 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../apps/features/AuthSlice";
 import { UserContext } from "../context/userContext";
-// import VisibilityIcon from "@mui/icons-material/Visibility";
-// import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 const LoginPage = () => {
     const [login, { isLoading }] = useLoginMutation();
@@ -16,6 +14,7 @@ const LoginPage = () => {
     console.log("set", setUser);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
     const [errorMessage, setErrorMessage] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
@@ -36,14 +35,10 @@ const LoginPage = () => {
                 const response = await login(values).unwrap();
                 console.log("response", response);
 
-                // if (!response.status) {
-                //   setErrorMessage(response.message);
-                //   return;
-                // }
                 dispatch(
                     setCredentials({
                         // id: response.data.user.id,
-                        token: response.token,
+                        token: response.access_token,
                         // role: response.data.user.role,
                     })
                 );
@@ -64,7 +59,7 @@ const LoginPage = () => {
             className="p-6 bg-white w-1/3 items-center"
             onSubmit={formik.handleSubmit}
         >
-            <div className="mt-10 flex flex-col items-center">
+            <div className="mt-5 flex flex-col items-center">
                 {/* <img
           src={weblogo}
           alt="weblogo"
@@ -72,13 +67,13 @@ const LoginPage = () => {
           width={100}
           height={100}
         /> */}
-                <h4 className="text-2xl font-semibold mb-4 text-[#b6d26f]">
-                    Welcome !
+                <h4 className="text-2xl font-semibold mb-4 text-[#1c398e]">
+                    Welcome to !
                 </h4>
             </div>
             <div className="mb-4">
                 <input
-                    className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-2 border border-[#bedbff] rounded focus:outline-none shadow-md"
                     placeholder="Enter user name"
                     id="email"
                     type="text"
@@ -94,7 +89,7 @@ const LoginPage = () => {
 
             <div className="mb-4 relative">
                 <input
-                    className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-2 border border-[#bedbff] rounded focus:outline-none shadow-md"
                     placeholder="Enter Password"
                     id="password"
                     name="password"
@@ -117,18 +112,34 @@ const LoginPage = () => {
                 ) : null}
             </div>
 
-            <div className="!mt-8">
+            <div>
                 <button
                     type="submit"
-                    className="w-full py-2 px-4 text-lg tracking-wide rounded-lg text-white bg-[#05445E] hover:bg-[#05445E]/80 focus:outline-none font-bold cursor-pointer"
+                    className="w-full py-2 px-4 text-lg  rounded-lg text-white bg-[#1c398e] font-bold cursor-pointer shadow-md"
                     disabled={formik.isSubmitting || isLoading}
                 >
-                    {isLoading ? "Logging in..." : "Login"}
+                    {isLoading ? (
+                        <div className="flex flex-row items-center justify-center space-x-4">
+                            <div className="w-4 h-4 border-2 border-gray-300 border-t-[#05445E] rounded-full animate-spin"></div>
+                            <span>Logging In</span>
+                        </div>
+                    ) : (
+                        "Login"
+                    )}
                 </button>
 
                 {errorMessage && (
                     <div className="text-red-600 mt-2">{errorMessage}</div>
                 )}
+            </div>
+            <div className="flex flex-row items-center mt-2">
+                <span>Don't you have an account? </span>
+                <button
+                    className="text-blue-800 underline cursor-pointer"
+                    onClick={() => navigate("/register")}
+                >
+                    Register
+                </button>
             </div>
         </form>
     );

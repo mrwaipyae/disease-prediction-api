@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>React in Laravel</title>
+    <title>Disease Prediction System</title>
      @viteReactRefresh 
     @vite(['resources/css/app.css', 'resources/js/app.jsx'])
 </head>
