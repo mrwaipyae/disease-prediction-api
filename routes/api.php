@@ -23,30 +23,14 @@ Route::middleware('api')->prefix('v1')->group(function () {
 
     // Protected routes
     Route::middleware('auth:sanctum')->group(function () {
-        // User profile
         Route::get('user', [AuthController::class, 'user']);
-        Route::post('logout', [AuthController::class, 'logout']);
-
-
-        // Doctor management (admin only)
-        // Route::middleware('role:admin')->prefix('doctors')->group(function () {
-        //     Route::get('/', [DoctorController::class, 'index']);
-        //     Route::post('/', [DoctorController::class, 'store']);
-        //     Route::get('/{doctor}', [DoctorController::class, 'show']);
-        //     Route::put('/{doctor}', [DoctorController::class, 'update']);
-        //     Route::delete('/{doctor}', [DoctorController::class, 'destroy']);
-        // });
-
-        // Appointments (authenticated users)
-        // Route::prefix('appointments')->group(function () {
-        //     Route::get('/', [AppointmentController::class, 'index']);
-        //     Route::post('/', [AppointmentController::class, 'store']);
-        //     Route::get('/{appointment}', [AppointmentController::class, 'show']);
-        //     Route::put('/{appointment}', [AppointmentController::class, 'update']);
-        //     Route::delete('/{appointment}', [AppointmentController::class, 'destroy']);
-        // });
-
-        Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-        });
+        Route::get('/users', [UserController::class, 'index']);
+        Route::post('logout', [AuthController::class, 'logout']); 
+    });
+     Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+        Route::get('/doctors', [DoctorController::class, 'index']);
+        Route::post('/doctors', [DoctorController::class, 'store']);
+        Route::put('/doctors/{id}', [DoctorController::class, 'update']);
+        Route::delete('/doctors/{id}', [DoctorController::class, 'destroy']);
     });
 });

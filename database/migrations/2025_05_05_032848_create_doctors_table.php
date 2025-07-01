@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('doctors', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->unique(); // link to users table
+            // $table->unsignedBigInteger('user_id')->unique(); // link to users table
             $table->string('specialization');
             $table->text('bio')->nullable();
-            $table->timestamps();
+            $table->string('contact_number')->nullable();
+            $table->string('location')->nullable();
+            $table->string('available_days')->nullable();
         
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });

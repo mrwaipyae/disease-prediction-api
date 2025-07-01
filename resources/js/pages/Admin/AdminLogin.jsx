@@ -2,11 +2,11 @@ import React, { useContext, useState } from "react";
 // import weblogo from "../../assets/weblogo.png";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useLoginMutation } from "../apps/features/apiSlice";
+import { useLoginMutation } from "../../apps/features/apiSlice";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setCredentials } from "../apps/features/AuthSlice";
-import { UserContext } from "../context/userContext";
+import { setCredentials } from "../../apps/features/AuthSlice";
+import { UserContext } from "../../context/userContext";
 
 const LoginPage = () => {
     const [login, { isLoading }] = useLoginMutation();
@@ -42,7 +42,7 @@ const LoginPage = () => {
                     })
                 );
                 if (response?.message === "Login successful") {
-                    navigate("/patient/results");
+                    navigate("/admin");
                 }
             } catch (err) {
                 console.error("Login Failed:", err);
@@ -131,7 +131,7 @@ const LoginPage = () => {
                     <div className="text-red-600 mt-2">{errorMessage}</div>
                 )}
             </div>
-            <div className="flex flex-row items-center mt-2">
+            {/* <div className="flex flex-row items-center mt-2">
                 <span>Don't you have an account? </span>
                 <button
                     className="text-blue-800 underline cursor-pointer"
@@ -139,7 +139,7 @@ const LoginPage = () => {
                 >
                     Register
                 </button>
-            </div>
+            </div> */}
         </form>
     );
 };

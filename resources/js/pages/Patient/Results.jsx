@@ -8,6 +8,7 @@ import OneSelect from "../../components/OneSelect";
 import localIcon from "../../../assets/index";
 import { Navigate, useNavigate } from "react-router-dom";
 import PatientDashboardHeader from "../../components/PatientDashboardHeader";
+import Tree from "react-d3-tree";
 
 export default function Results() {
     const navigate = useNavigate();
@@ -61,6 +62,7 @@ export default function Results() {
         return () =>
             document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+    console.log("tree", prediction?.tree);
 
     return (
         <>
@@ -191,7 +193,7 @@ export default function Results() {
                             onClick={() => setShowModal(false)}
                         >
                             <div
-                                className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full"
+                                className="bg-white rounded-lg shadow-lg p-6 w-full h-full"
                                 onClick={(e) => e.stopPropagation()}
                             >
                                 <div className="flex flex-row items-center justify-between">
@@ -211,6 +213,10 @@ export default function Results() {
                                         {prediction?.predicted_disease}
                                     </strong>
                                 </p>
+                                <Tree
+                                    data={prediction?.prediction_path_tree}
+                                    orientation="vertical"
+                                />
                             </div>
                         </div>
                     )}

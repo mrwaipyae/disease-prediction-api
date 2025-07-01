@@ -10,7 +10,8 @@ import About from "./pages/About";
 import LoginPage from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Logout from "./pages/Logout";
-import AdminLogin from "./pages/AdminLogin/AdminLogin";
+import AdminLogin from "./pages/Admin/AdminLogin";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
 
 export default function Index() {
     return (
@@ -28,6 +29,14 @@ export default function Index() {
 
                 {/* Protected Routes */}
                 <Route
+                    path="/admin"
+                    element={
+                        <ProtectedRoute>
+                            <AdminDashboard />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
                     path="/patient"
                     element={
                         <ProtectedRoute>
@@ -40,6 +49,14 @@ export default function Index() {
                     element={
                         <ProtectedRoute>
                             <Results />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/patient/doctors"
+                    element={
+                        <ProtectedRoute>
+                            <Doctors />
                         </ProtectedRoute>
                     }
                 />

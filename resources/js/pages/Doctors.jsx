@@ -1,6 +1,12 @@
+import { useState } from "react";
 import doctorImage from "../../assets/images/doctor.png";
 import localIcon from "../../assets/index";
+import PatientDashboardHeader from "../components/PatientDashboardHeader";
+import SideBar from "../components/SideBar";
+import { useGetLoggedInUserQuery } from "../apps/features/apiSlice";
 export default function Doctors() {
+    const { data: user } = useGetLoggedInUserQuery({});
+    const [showMenu, setShowMenu] = useState();
     const doctors = [
         {
             name: "Dr. Alice Johnson",
@@ -23,36 +29,53 @@ export default function Doctors() {
     ];
 
     return (
-        <div>
-            <div className="p-6 mx-auto">
-                <h2 className="text-2xl font-bold mb-6 text-[#1c398e] text-center">
-                    Doctors
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {doctors.map((doc, index) => (
-                        <div
-                            key={index}
-                            className="border p-4 rounded shadow bg-white flex items-center gap-4"
-                        >
-                            <img
-                                src={doc.image}
-                                alt={doc.name}
-                                className="w-24 h-24 object-cover rounded-full border"
-                            />
-                            <div>
-                                <h3 className="text-xl font-semibold text-[#1c398e]">
-                                    {doc.name}
-                                </h3>
-                                <p>Email: {doc.email}</p>
-                                <p>Specialization: {doc.specialization}</p>
-                                <p>Phone: {doc.phone}</p>
-                                <p>Address: {doc.address}</p>
-                                <p>Working Hours: {doc.workingHours}</p>
-                            </div>
+        <>
+            <PatientDashboardHeader
+                user={user}
+                showMenu={showMenu}
+                setShowMenu={setShowMenu}
+            />
+            <div className="flex">
+                {/* Sidebar */}
+                <div
+                    className={`bg-gray-900 text-white p-4 min-h-screen transition-all duration-300 w-64`}
+                >
+                    <SideBar />
+                </div>
+                <div>
+                    <div className="p-6 mx-auto">
+                        <h2 className="text-2xl font-bold mb-6 text-[#1c398e] text-center">
+                            Doctors
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {doctors.map((doc, index) => (
+                                <div
+                                    key={index}
+                                    className="border p-4 rounded shadow bg-white flex items-center gap-4"
+                                >
+                                    <img
+                                        src={doc.image}
+                                        alt={doc.name}
+                                        className="w-24 h-24 object-cover rounded-full border"
+                                    />
+                                    <div>
+                                        <h3 className="text-xl font-semibold text-[#1c398e]">
+                                            {doc.name}
+                                        </h3>
+                                        <p>Email: {doc.email}</p>
+                                        <p>
+                                            Specialization: {doc.specialization}
+                                        </p>
+                                        <p>Phone: {doc.phone}</p>
+                                        <p>Address: {doc.address}</p>
+                                        <p>Working Hours: {doc.workingHours}</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    ))}
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }

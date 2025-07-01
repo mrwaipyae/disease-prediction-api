@@ -29,7 +29,7 @@ export default function PatientPage() {
                 showMenu={showMenu}
                 setShowMenu={setShowMenu}
             />
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-[1fr_3fr] gap-4">
                 <div className="col-span-1 bg-gray-900 text-white p-4 min-h-screen">
                     <div className="flex flex-row items-center space-x-4">
                         <img src={localIcon.dashboard} alt="dashboard" />
@@ -62,31 +62,16 @@ export default function PatientPage() {
                             />
                             <a href="/patient/records">Diagnosis Results</a>
                         </li>
-                        {user?.role === "doctor" ? (
-                            <li className="flex flex-row items-center space-x-4">
-                                <img
-                                    src={localIcon.appointment}
-                                    className="text-white"
-                                    width={20}
-                                    height={20}
-                                />
-                                <a href="/patient/appointments">
-                                    Appointment Requests
-                                </a>
-                            </li>
-                        ) : (
-                            <li className="flex flex-row items-center space-x-4">
-                                <img
-                                    src={localIcon.appointment}
-                                    className="text-white"
-                                    width={20}
-                                    height={20}
-                                />
-                                <a href="/patient/appointments">
-                                    Your Appointments
-                                </a>
-                            </li>
-                        )}
+
+                        <li className="flex flex-row items-center space-x-4">
+                            <img
+                                src={localIcon.appointment}
+                                className="text-white"
+                                width={20}
+                                height={20}
+                            />
+                            <a href="/patient/doctors">Doctor's Information</a>
+                        </li>
                     </ul>
                 </div>
                 {user?.role === "doctor" ? (

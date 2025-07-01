@@ -20,15 +20,12 @@ class DiseasePredictionController extends Controller
         $symptoms = [];
 
         // Read CSV file
-        if (($handle = fopen(storage_path('app/dataset/Testing.csv'), 'r')) !== false) {
-            $header = fgetcsv($handle); // Read the header row
-            logger()->info('Header: ' . json_encode($header)); // Log the header
+        if (($handle = fopen(storage_path('app/dataset/Testing1.csv'), 'r')) !== false) {
+            $header = fgetcsv($handle); // Read header row
 
             while (($row = fgetcsv($handle)) !== false) {
-                // logger()->info('Row data: ' . json_encode($row)); // Log the row data
                 $rowData = array_combine($header, $row);
 
-                // Collect symptoms where value is not empty (and key is not 'prognosis')
                 $patientSymptoms = [];
                 foreach ($rowData as $key => $value) {
                     if (!empty($value) && $key !== 'prognosis') {
@@ -36,8 +33,6 @@ class DiseasePredictionController extends Controller
                         $symptoms[] = trim($key);
                     }
                 }
-
-                logger()->info('Patient Symptoms: ' . json_encode($patientSymptoms)); // Log the symptoms
 
                 $data[] = [
                     'symptoms' => $patientSymptoms,
@@ -48,11 +43,11 @@ class DiseasePredictionController extends Controller
             fclose($handle);
         }
 
-        // Unique symptoms list
+        // Get unique symptoms
         $symptoms = array_unique($symptoms);
-        $attributes = array_values($symptoms); // Attributes for the tree
+        $attributes = array_values($symptoms);
 
-        // Reformat data: symptoms => 1/0 format
+        // Format data for training
         $formattedData = [];
         foreach ($data as $entry) {
             $record = [];
@@ -63,34 +58,39 @@ class DiseasePredictionController extends Controller
             $formattedData[] = $record;
         }
 
-        // Train the tree
+        // Train the decision tree
         $tree = $this->id3->train($formattedData, $attributes);
 
-        // Get input symptoms from request
-        $inputSymptoms = $request->input('symptoms', []); // Should be an array of symptom names
-
-        // Prepare sample
+        // Classify user input
+        $inputSymptoms = $request->input('symptoms', []);
         $sample = [];
         foreach ($symptoms as $symptom) {
             $sample[$symptom] = in_array($symptom, $inputSymptoms) ? 1 : 0;
         }
 
-        // Classify
         $predictedDisease = $this->id3->classify($tree, $sample);
+        $steps = $this->id3->getDecisionPathSteps();
+
+        // Convert full tree for frontend (optional)
+        $treeForFrontend = $this->formatTreeForFrontend($tree);
+
+        // Convert decision path only
+        $predictionPathTree = $this->buildPredictionPathTree($steps);
 
         return response()->json([
-            'predicted_disease' => $predictedDisease
+            'predicted_disease' => $predictedDisease,
+            'steps' => $steps,
+            'tree' => $treeForFrontend,
+            'prediction_path_tree' => $predictionPathTree
         ]);
     }
 
     public function getSymptoms()
     {
         $symptoms = [];
-    
-        if (($handle = fopen(storage_path('app/dataset/Testing.csv'), 'r')) !== false) {
-            $header = fgetcsv($handle); // Get header first
-        
-            // All columns except 'prognosis' are symptoms
+
+        if (($handle = fopen(storage_path('app/dataset/Testing1.csv'), 'r')) !== false) {
+            $header = fgetcsv($handle);
             foreach ($header as $colName) {
                 if (strtolower($colName) !== 'prognosis') {
                     $symptoms[] = trim($colName);
@@ -98,8 +98,71 @@ class DiseasePredictionController extends Controller
             }
             fclose($handle);
         }
-    
+
         return response()->json($symptoms);
     }
+
+    // Convert internal decision tree format to frontend-friendly format
+    private function formatTreeForFrontend($node)
+    {
+        if (!is_array($node)) {
+            return ['name' => $node]; // Leaf node
+        }
+
+        $children = [];
+        if (isset($node['branches'])) {
+            foreach ($node['branches'] as $value => $child) {
+                $children[] = [
+                    'name' => "{$node['attribute']} = $value",
+                    'children' => [$this->formatTreeForFrontend($child)]
+                ];
+            }
+        }
+
+        return [
+            'name' => $node['attribute'],
+            'children' => $children
+        ];
+    }
+
+    // Build simplified tree from decision steps (e.g., "Fever = 1", "Cough = 0", "→ Flu")
+    private function buildPredictionPathTree(array $steps)
+{
+    $tree = null;
+    $current = &$tree;
+
+    foreach ($steps as $step) {
+        // If it's a leaf
+        if (str_starts_with($step, '→')) {
+            $current['children'][] = ['name' => trim($step)];
+            continue;
+        }
+
+        // Split into attribute and value
+        if (strpos($step, ' = ') !== false) {
+            [$attrValue, $val] = explode(' = ', $step);
+            $branchLabel = "$attrValue = $val";
+
+            // Add attribute node if this is root
+            if ($tree === null) {
+                $tree = [
+                    'name' => $attrValue,
+                    'children' => [
+                        ['name' => $branchLabel, 'children' => []]
+                    ]
+                ];
+                $current = &$tree['children'][0];
+            } else {
+                $current['children'][] = [
+                    'name' => $branchLabel,
+                    'children' => []
+                ];
+                $current = &$current['children'][count($current['children']) - 1];
+            }
+        }
+    }
+
+    return $tree ?? ['name' => 'No path'];
+}
 
 }
