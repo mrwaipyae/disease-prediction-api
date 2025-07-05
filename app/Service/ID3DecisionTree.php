@@ -148,4 +148,25 @@ class ID3DecisionTree
                    str_starts_with($step, 'No attributes left');
         }));
     }
+
+    public function evaluateAccuracy($tree, $testData)
+{
+    $correct = 0;
+    $total = count($testData);
+
+    foreach ($testData as $sample) {
+        $actual = $sample['prognosis'];
+        $predicted = $this->classify($tree, $sample);
+
+        if ($actual === $predicted) {
+            $correct++;
+        }
+    }
+
+    $accuracy = $total > 0 ? ($correct / $total) * 100 : 0;
+    $this->log("Accuracy: " . round($accuracy, 2) . "% ($correct / $total correct)");
+
+    return round($accuracy, 2); // Return percentage rounded to 2 decimals
+}
+
 }
