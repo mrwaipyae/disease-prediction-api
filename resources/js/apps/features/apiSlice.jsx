@@ -76,6 +76,15 @@ export const apiSlice = createApi({
                 body: { symptoms },
             }),
         }),
+        getPredictionHistory: builder.query({
+            query: () => ({
+                url: "/api/v1/prediction-history",
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }),
+        }),
         getLoggedInUser: builder.query({
             query: () => ({
                 url: "/api/v1/user",
@@ -90,5 +99,6 @@ export const {
     useChangePasswordMutation,
     useGetSymptomsQuery,
     useLazyPredictDiseaseQuery,
+    useGetPredictionHistoryQuery,
     useGetLoggedInUserQuery,
 } = apiSlice;

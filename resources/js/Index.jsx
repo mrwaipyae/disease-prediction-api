@@ -12,6 +12,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Logout from "./pages/Logout";
 import AdminLogin from "./pages/Admin/AdminLogin";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
+import Records from "./pages/Patient/Records";
 
 export default function Index() {
     return (
@@ -49,6 +50,14 @@ export default function Index() {
                     element={
                         <ProtectedRoute>
                             <Results />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/patient/records"
+                    element={
+                        <ProtectedRoute>
+                            <Records />
                         </ProtectedRoute>
                     }
                 />

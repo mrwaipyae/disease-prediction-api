@@ -118,7 +118,7 @@ export default function Results() {
                                     </a>
                                 )}
                             </li>
-                            {user?.role === "doctor" ? (
+                            {/* {user?.role === "doctor" ? (
                                 <li className="flex flex-row items-center space-x-4">
                                     <img
                                         src={localIcon.appointment}
@@ -142,7 +142,7 @@ export default function Results() {
                                         Your Appointments
                                     </a>
                                 </li>
-                            )}
+                            )} */}
                         </ul>
                     </>
                 </div>
@@ -208,15 +208,29 @@ export default function Results() {
                                     />
                                 </div>
                                 <p className="text-green-700 text-lg">
-                                    Disease may be:{" "}
-                                    <strong>
-                                        {prediction?.predicted_disease}
-                                    </strong>
+                                    {prediction?.predicted_disease ? (
+                                        <strong>
+                                            {prediction.predicted_disease}
+                                        </strong>
+                                    ) : (
+                                        <span>{prediction?.message}</span>
+                                    )}
                                 </p>
-                                <Tree
-                                    data={prediction?.prediction_path_tree}
-                                    orientation="vertical"
-                                />
+                                {prediction?.predicted_disease && (
+                                    <p>
+                                        Confidence Score:{" "}
+                                        <strong>
+                                            {prediction?.confidence}%
+                                        </strong>
+                                    </p>
+                                )}
+
+                                {prediction?.predicted_disease && (
+                                    <Tree
+                                        data={prediction?.prediction_path_tree}
+                                        orientation="vertical"
+                                    />
+                                )}
                             </div>
                         </div>
                     )}

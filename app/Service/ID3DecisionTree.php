@@ -138,16 +138,16 @@ class ID3DecisionTree
     }
 
     // Keep if you want debug/training steps (not needed for UI)
-    public function getBriefSteps()
-    {
-        return array_values(array_filter($this->steps, function ($step) {
-            return str_starts_with($step, 'Chosen attribute') ||
-                   (str_starts_with($step, 'Branch') && strpos($step, 'has') !== false) ||
-                   str_starts_with($step, 'All records have same disease') ||
-                   str_starts_with($step, 'Final prediction') ||
-                   str_starts_with($step, 'No attributes left');
-        }));
-    }
+    // public function getBriefSteps()
+    // {
+    //     return array_values(array_filter($this->steps, function ($step) {
+    //         return str_starts_with($step, 'Chosen attribute') ||
+    //                (str_starts_with($step, 'Branch') && strpos($step, 'has') !== false) ||
+    //                str_starts_with($step, 'All records have same disease') ||
+    //                str_starts_with($step, 'Final prediction') ||
+    //                str_starts_with($step, 'No attributes left');
+    //     }));
+    // }
 
     public function evaluateAccuracy($tree, $testData)
 {
@@ -166,7 +166,7 @@ class ID3DecisionTree
     $accuracy = $total > 0 ? ($correct / $total) * 100 : 0;
     $this->log("Accuracy: " . round($accuracy, 2) . "% ($correct / $total correct)");
 
-    return round($accuracy, 2); // Return percentage rounded to 2 decimals
+    return round($accuracy, 2); 
 }
 
 }

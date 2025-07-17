@@ -13,10 +13,10 @@ Route::get('/hello', function () {
 
 Route::middleware('api')->prefix('v1')->group(function () {
     // Prediction & symptoms
-    Route::post('/predict', [DiseasePredictionController::class, 'diagnose']);
     Route::get('/symptoms', [DiseasePredictionController::class, 'getSymptoms']);
     Route::get('/disease-info/{disease}', [DiseaseInformationController::class, 'getInfo']);
     Route::get('/accuracy', [DiseasePredictionController::class, 'calculateAccuracy']);
+
 
 
     // Auth (public)
@@ -28,6 +28,10 @@ Route::middleware('api')->prefix('v1')->group(function () {
         Route::get('user', [AuthController::class, 'user']);
         // Route::get('/users', [UserController::class, 'index']);
         Route::post('logout', [AuthController::class, 'logout']); 
+        Route::post('/predict', [DiseasePredictionController::class, 'diagnose']);
+
+        Route::get('/prediction-history', [DiseasePredictionController::class, 'getPredictionHistory']);
+
     });
      Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
         Route::get('/doctors', [DoctorController::class, 'index']);

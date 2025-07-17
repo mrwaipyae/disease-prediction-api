@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Service\ID3DecisionTree;
 use App\Models\Disease;
+use App\Models\PredictionHistory; // Assuming you have a model for storing prediction history
 
 
 class DiseasePredictionController extends Controller
@@ -70,7 +71,33 @@ class DiseasePredictionController extends Controller
             $sample[$symptom] = in_array($symptom, $inputSymptoms) ? 1 : 0;
         }
 
+        $selectedSymptoms = array_filter($sample, fn($v) => $v == 1);
+        $selectedSymptomNames = array_keys($selectedSymptoms);
+
         $predictedDisease = $this->id3->classify($tree, $sample);
+
+        $matchCount = 0;
+        $diseaseCount = 0;
+
+        foreach ($formattedData as $entry) {
+            $entrySymptoms = array_filter($entry, function ($val, $key) {
+                return $key !== 'Disease' && $val == 1;
+            }, ARRAY_FILTER_USE_BOTH);
+
+            // Compare with user-selected symptoms
+            $userSymptoms = array_filter($sample, fn($v) => $v == 1);
+            $matchingSymptoms = array_intersect_key($entrySymptoms, $userSymptoms);
+
+            // Consider as a match if all user symptoms exist in this entry
+            if (count($matchingSymptoms) === count($userSymptoms)) {
+                $matchCount++;
+                if ($entry['Disease'] === $predictedDisease) {
+                    $diseaseCount++;
+                }
+            }
+        }
+
+        $confidence = $matchCount > 0 ? round(($diseaseCount / $matchCount) * 100, 2) : null;
         $steps = $this->id3->getDecisionPathSteps();
 
         // Convert full tree for frontend (optional)
@@ -79,12 +106,42 @@ class DiseasePredictionController extends Controller
         // Convert decision path only
         $predictionPathTree = $this->buildPredictionPathTree($steps);
 
-        return response()->json([
-            'predicted_disease' => $predictedDisease,
+        $response = [
+            // 'predicted_disease' => $predictedDisease,
+            'confidence' => $confidence,
             'steps' => $steps,
             'tree' => $treeForFrontend,
-            'prediction_path_tree' => $predictionPathTree
-        ]);
+            'prediction_path_tree' => $predictionPathTree,
+            'selected_symptoms' => $selectedSymptomNames,
+        ];
+        if (!is_null($confidence) && $confidence > 0) {
+            if (!$request->user()) {
+            return response()->json(['error' => 'Unauthorized. Please log in first.'], 401);
+            }
+            $response['predicted_disease'] = $predictedDisease;
+            $response['confidence'] = $confidence;
+
+            $alreadyExists = PredictionHistory::where('user_id', $request->user()->id)
+                ->where('predicted_disease', $predictedDisease)
+                ->where('confidence', $confidence)
+                // ->whereJsonContains('symptoms', $selectedSymptomNames[0]) // simplified check
+                ->where('symptoms', json_encode($selectedSymptomNames))
+                ->exists();
+
+             if (!$alreadyExists) {
+                PredictionHistory::create([
+                    'user_id' => $request->user()->id,
+                    'symptoms' => $selectedSymptomNames,
+                    'predicted_disease' => $predictedDisease,
+                    'confidence' => $confidence,
+                    'predicted_at' => now(),
+                ]);
+            }
+        } else {
+            $response['message'] = 'No matching records found for the selected symptoms. Unable to predict disease.';
+        }
+
+        return response()->json($response);
     }
 
     public function getSymptoms()
@@ -219,5 +276,18 @@ public function calculateAccuracy()
         'used_attributes' => $attributes
     ]);
 }
+
+public function getPredictionHistory(Request $request)
+{
+    $user = $request->user();
+
+    $history = PredictionHistory::where('user_id', $user->id)
+                ->orderBy('predicted_at', 'desc')
+                ->get();
+
+    return response()->json($history);
+}
+
+
 
 }

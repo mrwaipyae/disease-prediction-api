@@ -21,6 +21,7 @@ import menu from "./icons/menu.svg";
 import doctor from "./images/doctor.png";
 import userDoctor from "./icons/user-doctor.svg";
 import profile from "./images/profile.png";
+import print from "./icons/print.svg";
 
 export default {
     logo,
@@ -42,4 +43,5 @@ export default {
     doctor,
     userDoctor,
     profile,
+    print,
 };
