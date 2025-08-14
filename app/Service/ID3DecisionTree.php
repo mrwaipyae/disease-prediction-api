@@ -79,7 +79,7 @@ class ID3DecisionTree
         $this->decisionPathSteps[] = "→ $tree";
         return $tree;
     }
-
+    
     public function getDecisionPathSteps() // NEW
     {
         return $this->decisionPathSteps;

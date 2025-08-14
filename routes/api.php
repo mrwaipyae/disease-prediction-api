@@ -4,8 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DiseasePredictionController;
 use App\Http\Controllers\DiseaseInformationController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\DoctorController;
-use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\AdminUserController;
 
 Route::get('/hello', function () {
     return 'Hello from API routes!';
@@ -33,10 +32,22 @@ Route::middleware('api')->prefix('v1')->group(function () {
         Route::get('/prediction-history', [DiseasePredictionController::class, 'getPredictionHistory']);
 
     });
-     Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
-        Route::get('/doctors', [DoctorController::class, 'index']);
-        Route::post('/doctors', [DoctorController::class, 'store']);
-        Route::put('/doctors/{id}', [DoctorController::class, 'update']);
-        Route::delete('/doctors/{id}', [DoctorController::class, 'destroy']);
+
+//     Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+//     Route::get('/users', [AdminUserController::class, 'index']);
+//     Route::post('/users', [AdminUserController::class, 'store']);
+//     Route::put('/users/{id}', [AdminUserController::class, 'update']);
+//     Route::delete('/users/{id}', [AdminUserController::class, 'destroy']);
+    
+// });
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/users', function () {
+        return response()->json(['message' => 'Admin route working']);
     });
 });
+
+});
+
+
+
+

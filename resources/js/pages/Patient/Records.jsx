@@ -92,7 +92,10 @@ export default function Records() {
                             <img src={localIcon.print} />
                         </button>
                     </div>
-                    <div id="print-section">
+                    <div
+                        id="print-section"
+                        className="max-h-[calc(100vh-100px)] overflow-y-auto"
+                    >
                         <table className="table-auto w-full border border-collapse">
                             <thead>
                                 <tr className="bg-gray-100">

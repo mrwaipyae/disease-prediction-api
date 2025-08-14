@@ -34,12 +34,16 @@ export default function Results() {
     const [triggerPredictDisease, { data: prediction, isLoading }] =
         useLazyPredictDiseaseQuery();
 
-    const handlePredict = () => {
+    const handlePredict = (e) => {
+        e.preventDefault();
         const filtered = selectedSymptoms.filter(Boolean);
-        if (filtered.length > 0) {
-            triggerPredictDisease({ symptoms: filtered });
-            setSelectedSymptoms(["", "", "", "", ""]);
+
+        if (filtered.length < 2) {
+            window.alert("Please select at least two symptoms.");
+            return;
         }
+
+        triggerPredictDisease({ symptoms: filtered });
     };
 
     useEffect(() => {
@@ -175,8 +179,11 @@ export default function Results() {
                             Cancel
                         </button>
                         <button
-                            onClick={handlePredict}
-                            disabled={isLoading}
+                            onClick={gitdict}
+                            disabled={
+                                isLoading ||
+                                selectedSymptoms.filter(Boolean).length < 2
+                            }
                             className={`${
                                 isLoading
                                     ? "bg-gray-400"
@@ -226,10 +233,11 @@ export default function Results() {
                                 )}
 
                                 {prediction?.predicted_disease && (
-                                    <Tree
-                                        data={prediction?.prediction_path_tree}
-                                        orientation="vertical"
-                                    />
+                                    // <Tree
+                                    //     data={prediction?.prediction_path_tree}
+                                    //     orientation="vertical"
+                                    // />
+                                    <Tree data={prediction?.tree} />
                                 )}
                             </div>
                         </div>

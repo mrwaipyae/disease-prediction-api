@@ -23,7 +23,7 @@ class DiseasePredictionController extends Controller
         $symptoms = [];
 
         // Read CSV file
-        if (($handle = fopen(storage_path('app/dataset/disease_symptoms1.csv'), 'r')) !== false) {
+        if (($handle = fopen(storage_path('app/dataset/Training.csv'), 'r')) !== false) {
             $header = fgetcsv($handle); // Read header row
 
             while (($row = fgetcsv($handle)) !== false) {
@@ -95,6 +95,7 @@ class DiseasePredictionController extends Controller
                     $diseaseCount++;
                 }
             }
+            
         }
 
         $confidence = $matchCount > 0 ? round(($diseaseCount / $matchCount) * 100, 2) : null;
@@ -148,7 +149,7 @@ class DiseasePredictionController extends Controller
     {
         $symptoms = [];
 
-        if (($handle = fopen(storage_path('app/dataset/disease_symptoms1.csv'), 'r')) !== false) {
+        if (($handle = fopen(storage_path('app/dataset/Training.csv'), 'r')) !== false) {
             $header = fgetcsv($handle);
             foreach ($header as $colName) {
                 if (strtolower($colName) !== 'prognosis') {
@@ -228,7 +229,7 @@ private function getSymptomAttributesFromCSV(): array
 {
     $symptoms = [];
 
-    if (($handle = fopen(storage_path('app/dataset/disease_symptoms1.csv'), 'r')) !== false) {
+    if (($handle = fopen(storage_path('app/dataset/Training.csv'), 'r')) !== false) {
         $header = fgetcsv($handle);
         foreach ($header as $colName) {
             if (strtolower($colName) !== 'prognosis') {
@@ -243,39 +244,39 @@ private function getSymptomAttributesFromCSV(): array
 }
 
 
-public function calculateAccuracy()
-{
-    $csvPath = storage_path('app/dataset/disease_symptoms1.csv');
-    $allData = [];
+// public function calculateAccuracy()
+// {
+//     $csvPath = storage_path('app/dataset/disease_symptoms1.csv');
+//     $allData = [];
 
-    if (($handle = fopen($csvPath, 'r')) !== false) {
-        $header = fgetcsv($handle);
-        while (($row = fgetcsv($handle)) !== false) {
-            $record = array_combine($header, $row);
-            $allData[] = $record;
-        }
-        fclose($handle);
-    }
+//     if (($handle = fopen($csvPath, 'r')) !== false) {
+//         $header = fgetcsv($handle);
+//         while (($row = fgetcsv($handle)) !== false) {
+//             $record = array_combine($header, $row);
+//             $allData[] = $record;
+//         }
+//         fclose($handle);
+//     }
     
 
-    if (empty($allData)) {
-        return response()->json(['error' => 'No data found'], 404);
-    }
+//     if (empty($allData)) {
+//         return response()->json(['error' => 'No data found'], 404);
+//     }
 
-    $attributes = $this->getSymptomAttributesFromCSV();
+//     $attributes = $this->getSymptomAttributesFromCSV();
 
-    $trainingData = array_slice($allData, 0, intval(count($allData) * 0.7));
-    $testData = array_slice($allData, intval(count($allData) * 0.7));
+//     $trainingData = array_slice($allData, 0, intval(count($allData) * 0.7));
+//     $testData = array_slice($allData, intval(count($allData) * 0.7));
 
-    $tree = (new ID3DecisionTree())->train($trainingData, $attributes);
-    $id3 = new ID3DecisionTree();
-    $accuracy = $id3->evaluateAccuracy($tree, $testData);
+//     $tree = (new ID3DecisionTree())->train($trainingData, $attributes);
+//     $id3 = new ID3DecisionTree();
+//     $accuracy = $id3->evaluateAccuracy($tree, $testData);
 
-    return response()->json([
-        'accuracy' => $accuracy,
-        'used_attributes' => $attributes
-    ]);
-}
+//     return response()->json([
+//         'accuracy' => $accuracy,
+//         'used_attributes' => $attributes
+//     ]);
+// }
 
 public function getPredictionHistory(Request $request)
 {
