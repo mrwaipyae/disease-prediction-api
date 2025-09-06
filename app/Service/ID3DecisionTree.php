@@ -17,43 +17,84 @@ class ID3DecisionTree
         $this->steps[] = $message;
     }
 
-    public function train($data, $attributes)
-    {
-        $this->log("Training on " . count($data) . " records");
+    // public function train($data, $attributes)
+    // {
+    //     $this->log("Training on " . count($data) . " records");
 
-        $diseases = array_unique(array_column($data, 'Disease'));
-        if (count($diseases) === 1) {
-            $this->log("All records have same disease: " . $diseases[0]);
-            return $diseases[0];
-        }
+    //     $diseases = array_unique(array_column($data, 'Disease'));
+    //     if (count($diseases) === 1) {
+    //         $this->log("All records have same disease: " . $diseases[0]);
+    //         return $diseases[0];
+    //     }
 
-        if (empty($attributes)) {
-            $majority = $this->majorityDisease($data);
-            $this->log("No attributes left. Returning majority disease: $majority");
-            return $majority;
-        }
+    //     if (empty($attributes)) {
+    //         $majority = $this->majorityDisease($data);
+    //         $this->log("No attributes left. Returning majority disease: $majority");
+    //         return $majority;
+    //     }
 
-        $bestAttribute = $this->chooseBestAttribute($data, $attributes);
-        $this->log("Chosen attribute to split: $bestAttribute");
+    //     $bestAttribute = $this->chooseBestAttribute($data, $attributes);
+    //     $this->log("Chosen attribute to split: $bestAttribute");
 
-        $tree = ['attribute' => $bestAttribute, 'branches' => []];
+    //     $tree = ['attribute' => $bestAttribute, 'branches' => []];
 
-        foreach ([1, 0] as $value) {
-            $subset = array_filter($data, fn($item) => $item[$bestAttribute] == $value);
+    //     foreach ([1, 0] as $value) {
+    //         $subset = array_filter($data, fn($item) => $item[$bestAttribute] == $value);
 
-            if (empty($subset)) {
-                $majority = $this->majorityDisease($data);
-                $this->log("Branch $bestAttribute = $value is empty. Using majority: $majority");
-                $tree['branches'][$value] = $majority;
-            } else {
-                $this->log("Branch $bestAttribute = $value has " . count($subset) . " records");
-                $remainingAttributes = array_diff($attributes, [$bestAttribute]);
-                $tree['branches'][$value] = $this->train($subset, $remainingAttributes);
-            }
-        }
+    //         if (empty($subset)) {
+    //             $majority = $this->majorityDisease($data);
+    //             $this->log("Branch $bestAttribute = $value is empty. Using majority: $majority");
+    //             $tree['branches'][$value] = $majority;
+    //         } else {
+    //             $this->log("Branch $bestAttribute = $value has " . count($subset) . " records");
+    //             $remainingAttributes = array_diff($attributes, [$bestAttribute]);
+    //             $tree['branches'][$value] = $this->train($subset, $remainingAttributes);
+    //         }
+    //     }
 
-        return $tree;
+    //     return $tree;
+    // }
+    public function train($data, $attributes, $depth = 0, $maxDepth = 15, $minSamples = 2)
+{
+    $this->log("Training on " . count($data) . " records at depth $depth");
+
+    // If all records have same disease → leaf
+    $diseases = array_unique(array_column($data, 'Disease'));
+    if (count($diseases) === 1) {
+        $this->log("All records same disease: " . $diseases[0]);
+        return $diseases[0];
     }
+
+    // Stopping conditions
+    if (empty($attributes) || count($data) < $minSamples || $depth >= $maxDepth) {
+        $majority = $this->majorityDisease($data);
+        $this->log("Stopping criteria reached. Returning majority disease: $majority");
+        return $majority;
+    }
+
+    // Choose best attribute
+    $bestAttribute = $this->chooseBestAttribute($data, $attributes);
+    $this->log("Chosen attribute: $bestAttribute");
+
+    $tree = ['attribute' => $bestAttribute, 'branches' => []];
+    $remainingAttributes = array_diff($attributes, [$bestAttribute]);
+
+    foreach ([1, 0] as $value) {
+        $subset = array_filter($data, fn($item) => $item[$bestAttribute] == $value);
+
+        if (empty($subset)) {
+            $majority = $this->majorityDisease($data);
+            $this->log("Branch $bestAttribute=$value empty. Using majority: $majority");
+            $tree['branches'][$value] = $majority;
+        } else {
+            $this->log("Branch $bestAttribute=$value has " . count($subset) . " records");
+            $tree['branches'][$value] = $this->train($subset, $remainingAttributes, $depth + 1, $maxDepth, $minSamples);
+        }
+    }
+
+    return $tree;
+}
+
 
     public function classify($tree, $sample)
     {

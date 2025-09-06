@@ -13,6 +13,7 @@ import Logout from "./pages/Logout";
 import AdminLogin from "./pages/Admin/AdminLogin";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import Records from "./pages/Patient/Records";
+import Accuracy from "./pages/Accuracy";
 
 export default function Index() {
     return (
@@ -30,10 +31,10 @@ export default function Index() {
 
                 {/* Protected Routes */}
                 <Route
-                    path="/admin"
+                    path="/accuracy"
                     element={
                         <ProtectedRoute>
-                            <AdminDashboard />
+                            <Accuracy />
                         </ProtectedRoute>
                     }
                 />

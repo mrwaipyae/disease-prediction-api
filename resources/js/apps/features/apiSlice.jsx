@@ -91,6 +91,12 @@ export const apiSlice = createApi({
                 method: "GET",
             }),
         }),
+        getAccuracy: builder.query({
+            query: () => ({
+                url: "api/evaluate-model",
+                method: "GET",
+            }),
+        }),
     }),
 });
 export const {
@@ -101,4 +107,5 @@ export const {
     useLazyPredictDiseaseQuery,
     useGetPredictionHistoryQuery,
     useGetLoggedInUserQuery,
+    useGetAccuracyQuery,
 } = apiSlice;

@@ -9,6 +9,7 @@ use App\Http\Controllers\AdminUserController;
 Route::get('/hello', function () {
     return 'Hello from API routes!';
 });
+Route::get('/evaluate-model', [DiseasePredictionController::class, 'evaluateModel']);
 
 Route::middleware('api')->prefix('v1')->group(function () {
     // Prediction & symptoms
@@ -33,13 +34,7 @@ Route::middleware('api')->prefix('v1')->group(function () {
 
     });
 
-//     Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
-//     Route::get('/users', [AdminUserController::class, 'index']);
-//     Route::post('/users', [AdminUserController::class, 'store']);
-//     Route::put('/users/{id}', [AdminUserController::class, 'update']);
-//     Route::delete('/users/{id}', [AdminUserController::class, 'destroy']);
-    
-// });
+
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
     Route::get('/users', function () {
         return response()->json(['message' => 'Admin route working']);

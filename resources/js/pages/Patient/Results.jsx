@@ -3,6 +3,7 @@ import {
     useGetLoggedInUserQuery,
     useGetSymptomsQuery,
     useLazyPredictDiseaseQuery,
+    useGetAccuracyQuery,
 } from "../../apps/features/apiSlice";
 import OneSelect from "../../components/OneSelect";
 import localIcon from "../../../assets/index";
@@ -14,6 +15,7 @@ export default function Results() {
     const navigate = useNavigate();
     const { data: user } = useGetLoggedInUserQuery({});
     const { data: symptoms } = useGetSymptomsQuery();
+
     const [selectedSymptoms, setSelectedSymptoms] = useState([
         "",
         "",
@@ -29,6 +31,16 @@ export default function Results() {
         const newSelections = [...selectedSymptoms];
         newSelections[index] = value;
         setSelectedSymptoms(newSelections);
+    };
+
+    const getAvailableSymptoms = (index) => {
+        // All selected except the one in this dropdown
+        const alreadySelected = selectedSymptoms.filter(
+            (s, i) => s && i !== index
+        );
+        return symptoms?.filter(
+            (symptom) => !alreadySelected.includes(symptom)
+        );
     };
 
     const [triggerPredictDisease, { data: prediction, isLoading }] =
@@ -160,7 +172,7 @@ export default function Results() {
                         >
                             <span className="w-[20%]">Symptom {index + 1}</span>
                             <OneSelect
-                                symptoms={symptoms}
+                                symptoms={getAvailableSymptoms(index)}
                                 value={selectedSymptoms[index]}
                                 onChange={(value) =>
                                     handleSymptomChange(index, value)
@@ -179,7 +191,7 @@ export default function Results() {
                             Cancel
                         </button>
                         <button
-                            onClick={gitdict}
+                            onClick={handlePredict}
                             disabled={
                                 isLoading ||
                                 selectedSymptoms.filter(Boolean).length < 2

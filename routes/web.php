@@ -8,3 +8,4 @@ Route::get('/{any}', function () {
     return view('welcome'); // or whatever Blade view you're rendering
 })->where('any', '.*');
 
+
